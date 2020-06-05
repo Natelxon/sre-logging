@@ -19,7 +19,7 @@ $ docker build -t natelxon/sre-logging .
 ### Run the container
 Create a container from the image with a docker volume where logs are located.
 ```
-$ docker run --name sre-logging -d -v $PWD/logs:/logs -e LOG_FILE=access_log_20190520-125058.log -p 8080:8080 natelxon/sre-logging
+$ docker run --name sre-logging -d -v $PWD/logs:/logs -e LOG_FILE=logs/access_log_20190520-125058.log -p 8080:8080 natelxon/sre-logging
 ```
 
 Visit http://localhost:8080/stats

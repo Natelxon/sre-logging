@@ -29,9 +29,7 @@ class StatsRunner():
 
         for line in lines:
             try:
-                print(line)
                 split = line.split(' ')
-                print(split)
 
                 ip = split[0]
                 http_req = split[5][1:]  # Remove leading quotation
