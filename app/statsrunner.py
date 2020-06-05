@@ -1,4 +1,5 @@
 import collections
+import time
 
 class StatsRunner():
 
@@ -8,28 +9,49 @@ class StatsRunner():
         self.last_line = None
         self.request_list = []
 
-    def analyze(self):
+    def watch(self):
+        # Watch log file for changes
         open_file = open(self.log_file, 'r')
-        lines = open_file.readlines()
-        open_file.close()
+        open_file.seek(0, 1)
 
-        for s in lines:
-            line = s.strip()
-            split = line.split(' ')
+        while True:
+            line = open_file.readline()
+            if not line:
+                time.sleep(0.1)
+                continue
+            if line == "\n":
+                time.sleep(0.1)
+                continue
+            yield line
 
-            ip = split[0]
-            http_req = split[5][1:]  # Remove leading quotation
-            http_code = split[8]
-            referer = split[10][1:-1]  # Remove leading and trailing quotation
+    def analyze(self):
+        lines = self.watch()
 
-            self.request_list.append({
-                "ip": ip,
-                "httpreq": http_req,
-                "httpcode": http_code,
-                "referer": referer
-            })
+        for line in lines:
+            try:
+                print(line)
+                split = line.split(' ')
+                print(split)
+
+                ip = split[0]
+                http_req = split[5][1:]  # Remove leading quotation
+                http_code = split[8]
+                # Remove leading and trailing quotation
+                referer = split[10][1:-1]
+
+                self.request_list.append({
+                    "ip": ip,
+                    "httpreq": http_req,
+                    "httpcode": http_code,
+                    "referer": referer
+                })
+
+                self.last_line = line
+            except Exception as e:
+                print(e)
 
     def summary(self):
+        # Calculate metrics from in memory data
         total_count = len(self.request_list)
 
         unique_counts_ip = collections.Counter(
